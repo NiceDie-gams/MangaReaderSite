@@ -123,4 +123,11 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Test for uploading chapters
+    |--------------------------------------------------------------------------
+    */
+    'auto_approve_translations' => env('AUTO_APPROVE_TRANSLATIONS', false),
+
 ];

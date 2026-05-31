@@ -32,3 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', [ReportController::class, 'showReports'])->name('reports.index');
     Route::patch('/reports/{report}/solve', [ReportController::class, 'solveReport'])->name('reports.solve');
 });
+
+Route::middleware(['auth', 'role:translator,admin'])->prefix('translator')->group(function () {
+    Route::get('/dashboard', [TranslatorController::class, 'dashboard'])->name('translator.dashboard');
+    Route::get('/chapters/create', [TranslatorController::class, 'create'])->name('translator.chapters.create');
+    Route::post('/chapters', [TranslatorController::class, 'store'])->name('translator.chapters.store');
+    Route::get('/chapters', [TranslatorController::class, 'index'])->name('translator.chapters.index');
+    Route::get('/chapters/{chapter}/edit', [TranslatorController::class, 'edit'])->name('translator.chapters.edit');
+    Route::put('/chapters/{chapter}', [TranslatorController::class, 'update'])->name('translator.chapters.update');
+});
