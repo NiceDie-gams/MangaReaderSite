@@ -1,7 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="mb-4 text-2xl font-semibold">Избранное: {{ $user->name }}</h1>
+<div>
+    <h1 class="mb-4 text-2xl font-semibold">Пользователь: {{$user->name}}</h1>
+    <div class="mb-10 mt-10">
+        <form action="{{ route('user.update', $user) }}" method="POST">
+            @csrf
+            <label for="name">Ваше имя:</label>
+            <input class= type="text" name="name" value="{{ $user->name }}"/>
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+<h1 class="mb-4 text-2xl font-semibold">Избранное:</h1>
 <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
     @foreach($user->favoriteTitles as $title)
         <div class="overflow-hidden rounded bg-white shadow">
