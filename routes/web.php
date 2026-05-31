@@ -7,6 +7,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TranslatorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [TitleController::class, 'index'])->name('home');
