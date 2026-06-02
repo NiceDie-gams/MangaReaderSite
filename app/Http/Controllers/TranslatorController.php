@@ -3,34 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
-use App\Models\ChapterPage;
 use App\Models\Title;
-use Illuminate\Http\UploadedFile;
+use App\Services\ChapterFileService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
-use ZipArchive;
 
 class TranslatorController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    //     $this->middleware('role:translator,admin');
-    // }
+    protected ChapterFileService $fileService;
+
+    public function __construct(ChapterFileService $fileService)
+    {
+        // $this->middleware('auth');
+        // $this->middleware('role:translator,admin');
+        $this->fileService = $fileService;
+    }
 
     public function dashboard(): View
     {
         $userId = auth()->id();
 
         $stats = [
-            'total'      => Chapter::where('uploaded_by', $userId)->count(),
-            'pending'    => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_PENDING)->count(),
-            'approved'   => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_APPROVED)->count(),
-            'rejected'   => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_REJECTED)->count(),
+            'total'    => Chapter::where('uploaded_by', $userId)->count(),
+            'pending'  => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_PENDING)->count(),
+            'approved' => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_APPROVED)->count(),
+            'rejected' => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_REJECTED)->count(),
         ];
 
         return view('translator.dashboard', compact('stats'));
@@ -45,16 +42,13 @@ class TranslatorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title_id'          => 'required|exists:titles,id',
-            'chapter_number'    => 'required|integer|min:1',
-            //'chapter_title'     => 'nullable|string|max:255',
-            'upload_method'     => 'required|in:zip,files',
-            'zip_file'          => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
-            'images'            => 'required_if:upload_method,files|array',
-            'images.*'          => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'title_id'       => 'required|exists:titles,id',
+            'chapter_number' => 'required|integer|min:1',
+            'upload_method'  => 'required|in:zip,files',
+            'zip_file'       => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
+            'images'         => 'required_if:upload_method,files|array|min:1',
+            'images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
-
-        $images = $request->file('images', []);
 
         $exists = Chapter::where('title_id', $validated['title_id'])
             ->where('chapter_number', $validated['chapter_number'])
@@ -72,25 +66,25 @@ class TranslatorController extends Controller
         $chapter = Chapter::create([
             'title_id'       => $validated['title_id'],
             'chapter_number' => $validated['chapter_number'],
-            //'title'          => $validated['chapter_title'] ?? null,
             'status'         => $status,
             'uploaded_by'    => auth()->id(),
         ]);
 
         try {
             if ($validated['upload_method'] === 'zip') {
-                $this->processZip($request->file('zip_file'), $chapter);
+                $this->fileService->processZip($request->file('zip_file'), $chapter);
             } else {
-                if (empty($images)) {
+                $images = $request->file('images');
+                if (!is_array($images) || count($images) === 0) {
                     throw new \Exception('Не выбраны изображения для загрузки.');
                 }
-
-                $this->processMultipleFiles($images, $chapter);
+                $this->fileService->processMultipleFiles($images, $chapter);
             }
         } catch (\Exception $e) {
             $chapter->delete();
-            Log::error('Ошибка при загрузке главы: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['upload_method' => 'Не удалось обработать файлы: ' . $e->getMessage()]);
+            return back()
+                ->withInput()
+                ->withErrors(['upload_method' => 'Не удалось обработать файлы: ' . $e->getMessage()]);
         }
 
         $message = $autoApprove
@@ -117,8 +111,7 @@ class TranslatorController extends Controller
         return view('translator.chapters.index', compact('chapters'));
     }
 
-
-    public function edit(Chapter $chapter)
+    public function edit(Chapter $chapter): View
     {
         if ($chapter->uploaded_by !== auth()->id() || !$chapter->isRejected()) {
             abort(403, 'Редактирование доступно только для отклонённых глав, загруженных вами.');
@@ -136,17 +129,13 @@ class TranslatorController extends Controller
         }
 
         $validated = $request->validate([
-            'title_id'          => 'required|exists:titles,id',
-            'chapter_number'    => 'required|integer|min:1',
-            //'chapter_title'     => 'nullable|string|max:255',
-            'upload_method'     => 'required|in:zip,files',
-            'zip_file'          => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
-            'images'            => 'required_if:upload_method,files|array',
-            'images.*'          => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'title_id'       => 'required|exists:titles,id',
+            'chapter_number' => 'required|integer|min:1',
+            'upload_method'  => 'required|in:zip,files',
+            'zip_file'       => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
+            'images'         => 'required_if:upload_method,files|array|min:1',
+            'images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
-
-        $images = $request->file('images', []);
-
 
         $exists = Chapter::where('title_id', $validated['title_id'])
             ->where('chapter_number', $validated['chapter_number'])
@@ -160,7 +149,6 @@ class TranslatorController extends Controller
         $chapter->update([
             'title_id'       => $validated['title_id'],
             'chapter_number' => $validated['chapter_number'],
-            //'title'          => $validated['chapter_title'] ?? null,
             'status'         => Chapter::STATUS_PENDING,
             'reject_reason'  => null,
         ]);
@@ -169,129 +157,22 @@ class TranslatorController extends Controller
 
         try {
             if ($validated['upload_method'] === 'zip') {
-                $this->processZip($request->file('zip_file'), $chapter);
+                $this->fileService->processZip($request->file('zip_file'), $chapter);
             } else {
-                if (empty($images)) {
+                $images = $request->file('images');
+                if (!is_array($images) || count($images) === 0) {
                     throw new \Exception('Не выбраны изображения для загрузки.');
                 }
-
-                $this->processMultipleFiles($images, $chapter);
+                $this->fileService->processMultipleFiles($images, $chapter);
             }
         } catch (\Exception $e) {
             $chapter->update(['status' => Chapter::STATUS_REJECTED]);
-            Log::error('Ошибка при обновлении главы: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['upload_method' => 'Не удалось обработать файлы: ' . $e->getMessage()]);
+            return back()
+                ->withInput()
+                ->withErrors(['upload_method' => 'Не удалось обработать файлы: ' . $e->getMessage()]);
         }
 
         return redirect()->route('translator.chapters.index')
             ->with('success', 'Глава исправлена и отправлена на повторную модерацию.');
-    }
-
-    private function processZip($zipFile, Chapter $chapter): void
-    {
-        $extractPath = storage_path("app/temp/chapter_{$chapter->id}_" . uniqid());
-        if (!is_dir($extractPath)) {
-            mkdir($extractPath, 0755, true);
-        }
-
-        $zip = new ZipArchive;
-        if ($zip->open($zipFile) !== true) {
-            throw new \Exception('Не удалось открыть ZIP-архив.');
-        }
-        $zip->extractTo($extractPath);
-        $zip->close();
-
-
-        $files = [];
-        $allowedExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($extractPath, \FilesystemIterator::SKIP_DOTS)
-        );
-
-        foreach ($iterator as $fileInfo) {
-            if (!$fileInfo->isFile()) {
-                continue;
-            }
-
-            $extension = strtolower($fileInfo->getExtension());
-            if (in_array($extension, $allowedExt, true)) {
-                $files[] = $fileInfo->getPathname();
-            }
-        }
-
-        if (empty($files)) {
-            throw new \Exception('В ZIP-архиве не найдено ни одного изображения.');
-        }
-
-        usort($files, function($a, $b) {
-            return strnatcmp(basename($a), basename($b));
-        });
-
-        $pageNumber = 1;
-        foreach ($files as $file) {
-            $imagePath = $this->storeImage($file, $chapter);
-            ChapterPage::create([
-                'chapter_id'   => $chapter->id,
-                'page_number'  => $pageNumber++,
-                'image_path'   => $imagePath,
-            ]);
-        }
-
-        $this->deleteDirectory($extractPath);
-    }
-
-
-    private function processMultipleFiles(array $images, Chapter $chapter): void
-    {
-        usort($images, function($a, $b) {
-            return strnatcmp($a->getClientOriginalName(), $b->getClientOriginalName());
-        });
-
-        $pageNumber = 1;
-        foreach ($images as $image) {
-            $path = $this->storeImage($image, $chapter);
-            ChapterPage::create([
-                'chapter_id'   => $chapter->id,
-                'page_number'  => $pageNumber++,
-                'image_path'   => $path,
-            ]);
-        }
-    }
-
-    private function storeImage($file, Chapter $chapter): string
-    {
-        $title = $chapter->titleBelong;
-        $slug = $title->slug;
-        $chapterNum = $chapter->chapter_number;
-        $directory = "manga/{$slug}/{$chapterNum}";
-
-        if ($file instanceof UploadedFile) {
-            $relativePath = $file->store($directory, 'public');
-            return '/storage/' . $relativePath;
-        }
-
-        if (is_string($file) && is_file($file)) {
-            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION)) ?: 'jpg';
-            $filename = Str::uuid()->toString() . '.' . $extension;
-            $relativePath = "{$directory}/{$filename}";
-
-            Storage::disk('public')->put($relativePath, file_get_contents($file));
-            return '/storage/' . $relativePath;
-        }
-
-        throw new \InvalidArgumentException('Неподдерживаемый тип файла для сохранения изображения.');
-    }
-
-    private function deleteDirectory(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-        $files = array_diff(scandir($dir), ['.', '..']);
-        foreach ($files as $file) {
-            $path = $dir . DIRECTORY_SEPARATOR . $file;
-            is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
-        }
-        rmdir($dir);
     }
 }
