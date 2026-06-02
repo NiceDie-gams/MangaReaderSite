@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Chapter;
 use App\Models\ChapterPage;
 use App\Models\Title;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use ZipArchive;
 
@@ -52,6 +54,8 @@ class TranslatorController extends Controller
             'images.*'          => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
+        $images = $request->file('images', []);
+
         $exists = Chapter::where('title_id', $validated['title_id'])
             ->where('chapter_number', $validated['chapter_number'])
             ->exists();
@@ -77,7 +81,11 @@ class TranslatorController extends Controller
             if ($validated['upload_method'] === 'zip') {
                 $this->processZip($request->file('zip_file'), $chapter);
             } else {
-                $this->processMultipleFiles($validated['images'], $chapter);
+                if (empty($images)) {
+                    throw new \Exception('Не выбраны изображения для загрузки.');
+                }
+
+                $this->processMultipleFiles($images, $chapter);
             }
         } catch (\Exception $e) {
             $chapter->delete();
@@ -137,6 +145,8 @@ class TranslatorController extends Controller
             'images.*'          => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
+        $images = $request->file('images', []);
+
 
         $exists = Chapter::where('title_id', $validated['title_id'])
             ->where('chapter_number', $validated['chapter_number'])
@@ -161,7 +171,11 @@ class TranslatorController extends Controller
             if ($validated['upload_method'] === 'zip') {
                 $this->processZip($request->file('zip_file'), $chapter);
             } else {
-                $this->processMultipleFiles($validated['images'], $chapter);
+                if (empty($images)) {
+                    throw new \Exception('Не выбраны изображения для загрузки.');
+                }
+
+                $this->processMultipleFiles($images, $chapter);
             }
         } catch (\Exception $e) {
             $chapter->update(['status' => Chapter::STATUS_REJECTED]);
@@ -188,10 +202,23 @@ class TranslatorController extends Controller
         $zip->close();
 
 
-        $files = glob($extractPath . '/**/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-        if (empty($files)) {
-            $files = glob($extractPath . '/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+        $files = [];
+        $allowedExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($extractPath, \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $fileInfo) {
+            if (!$fileInfo->isFile()) {
+                continue;
+            }
+
+            $extension = strtolower($fileInfo->getExtension());
+            if (in_array($extension, $allowedExt, true)) {
+                $files[] = $fileInfo->getPathname();
+            }
         }
+
         if (empty($files)) {
             throw new \Exception('В ZIP-архиве не найдено ни одного изображения.');
         }
@@ -236,9 +263,23 @@ class TranslatorController extends Controller
         $title = $chapter->titleBelong;
         $slug = $title->slug;
         $chapterNum = $chapter->chapter_number;
+        $directory = "manga/{$slug}/{$chapterNum}";
 
-        $relativePath = $file->store("manga/{$slug}/{$chapterNum}", 'public');
-        return '/storage/' . $relativePath;
+        if ($file instanceof UploadedFile) {
+            $relativePath = $file->store($directory, 'public');
+            return '/storage/' . $relativePath;
+        }
+
+        if (is_string($file) && is_file($file)) {
+            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION)) ?: 'jpg';
+            $filename = Str::uuid()->toString() . '.' . $extension;
+            $relativePath = "{$directory}/{$filename}";
+
+            Storage::disk('public')->put($relativePath, file_get_contents($file));
+            return '/storage/' . $relativePath;
+        }
+
+        throw new \InvalidArgumentException('Неподдерживаемый тип файла для сохранения изображения.');
     }
 
     private function deleteDirectory(string $dir): void

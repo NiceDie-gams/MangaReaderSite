@@ -36,8 +36,8 @@
         <div class="mb-4">
             <label class="mb-1 block font-medium">Способ загрузки</label>
             <div class="flex gap-4">
-                <label><input type="radio" name="upload_method" value="zip"> ZIP-архив</label>
-                <label><input type="radio" name="upload_method" value="files"> Отдельные файлы</label>
+                <label><input type="radio" name="upload_method" value="zip" {{ old('upload_method', 'zip') === 'zip' ? 'checked' : '' }}> ZIP-архив</label>
+                <label><input type="radio" name="upload_method" value="files" {{ old('upload_method') === 'files' ? 'checked' : '' }}> Отдельные файлы</label>
             </div>
         </div>
 
@@ -60,7 +60,8 @@
     const zipBlock = document.getElementById('zip-block');
     const filesBlock = document.getElementById('files-block');
     function toggle() {
-        const val = document.querySelector('input[name="upload_method"]:checked').value;
+        const checkedMethod = document.querySelector('input[name="upload_method"]:checked');
+        const val = checkedMethod ? checkedMethod.value : 'zip';
         zipBlock.classList.toggle('hidden', val !== 'zip');
         filesBlock.classList.toggle('hidden', val !== 'files');
     }
