@@ -30,7 +30,13 @@ class TranslatorController extends Controller
             'rejected' => Chapter::where('uploaded_by', $userId)->where('status', Chapter::STATUS_REJECTED)->count(),
         ];
 
-        return view('translator.dashboard', compact('stats'));
+        $recentChapters = Chapter::where('uploaded_by', $userId)
+            ->with('titleBelong')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('translator.dashboard', compact('stats', 'recentChapters'));
     }
 
     public function create(): View

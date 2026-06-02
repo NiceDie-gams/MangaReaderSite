@@ -7,6 +7,7 @@ use App\Models\Title;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Chapter;
 
 class TitleController extends Controller
 {
@@ -54,7 +55,16 @@ class TitleController extends Controller
 
     public function show(Title $title): View
     {
-        $title->load(['chapters', 'tags', 'comments.user']);
+       $chaptersQuery = $title->chapters()->orderBy('chapter_number');
+
+        if (!auth()->check() || (!auth()->user()->isTranslator() && !auth()->user()->isAdmin())) {
+            $chaptersQuery->where('status', Chapter::STATUS_APPROVED);
+        }
+
+        $chapters = $chaptersQuery->get();
+        $title->setRelation('chapters', $chapters);
+
+        $title->load(['tags', 'comments.user']);
         $isFavorite = auth()->check() && auth()->user()->favoriteTitles()->where('title_id', $title->id)->exists();
 
         return view('title-show', compact('title', 'isFavorite'));

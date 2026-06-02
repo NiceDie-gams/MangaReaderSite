@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Models\Tag;
+use Illuminate\Support\Facades\Artisan;
 
 class AdminController extends Controller
 {
@@ -87,5 +89,30 @@ class AdminController extends Controller
             ->paginate(25);
 
         return view('admin.users', compact('users'));
+    }
+
+    public function statistics(): View
+    {
+        $tags = Tag::with('statistic')
+            ->orderByDesc(
+                Tag::select('favorites_count')
+                    ->from('tag_favorites_statistics')
+                    ->whereColumn('tag_favorites_statistics.tag_id', 'tags.id')
+            )
+            ->paginate(20);
+
+        return view('admin.statistics', compact('tags'));
+    }
+
+    public function updateStatistics(Request $request)
+    {
+        Artisan::call('stats:update-favorites');
+        $output = Artisan::output();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Статистика обновлена']);
+        }
+
+        return redirect()->back()->with('success', 'Статистика обновлена');
     }
 }

@@ -18,6 +18,14 @@ class ChapterController extends Controller
         $chapter->load('pages');
         $firstPage = $chapter->pages->first();
 
+        if (!$chapter->isApproved()) {
+            $user = auth()->user();
+            $isOwner = $user && $user->id === $chapter->uploaded_by;
+            $isAdmin = $user && $user->isAdmin();
+            if (!$isOwner && !$isAdmin) {
+                abort(403, 'Глава ещё не опубликована.');
+            }
+        }
 
         $title->load('chapters');
         $chapters = $title->chapters;

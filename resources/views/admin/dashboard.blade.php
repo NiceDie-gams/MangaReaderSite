@@ -49,6 +49,10 @@
             <p class="text-lg font-semibold">Пользователи</p>
             <p class="mt-1 text-sm text-slate-600">Основная информация и роли пользователей.</p>
         </a>
+        <a href="{{ route('statistics') }}" class="rounded bg-white p-5 shadow hover:bg-slate-50">
+            <p class="text-lg font-semibold">Статистика</p>
+            <p class="mt-1 text-sm text-slate-600">Статистика сайта</p>
+        </a>
     </div>
 </div>
 @endsection

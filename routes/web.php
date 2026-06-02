@@ -53,4 +53,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports.index');
     Route::patch('/reports/{report}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
+
+    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+    Route::post('/statistics/update', [AdminController::class, 'updateStatistics'])->name('statistics.update');
 });
