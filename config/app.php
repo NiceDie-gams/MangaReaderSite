@@ -128,6 +128,6 @@ return [
     | Test for uploading chapters
     |--------------------------------------------------------------------------
     */
-    'auto_approve_translations' => env('AUTO_APPROVE_TRANSLATIONS', false),
+    'auto_approve_translations' => env('AUTO_APPROVE_TRANSLATIONS', true),
 
 ];
