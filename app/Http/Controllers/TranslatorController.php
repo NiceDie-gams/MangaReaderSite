@@ -14,12 +14,6 @@ use ZipArchive;
 
 class TranslatorController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('role:translator,admin');
-    }
-
     public function dashboard(): View
     {
         $userId = auth()->id();
