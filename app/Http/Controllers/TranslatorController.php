@@ -14,6 +14,12 @@ use ZipArchive;
 
 class TranslatorController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware('role:translator,admin');
+    // }
+
     public function dashboard(): View
     {
         $userId = auth()->id();
@@ -39,7 +45,7 @@ class TranslatorController extends Controller
         $validated = $request->validate([
             'title_id'          => 'required|exists:titles,id',
             'chapter_number'    => 'required|integer|min:1',
-            'chapter_title'     => 'nullable|string|max:255',
+            //'chapter_title'     => 'nullable|string|max:255',
             'upload_method'     => 'required|in:zip,files',
             'zip_file'          => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
             'images'            => 'required_if:upload_method,files|array',
@@ -62,7 +68,7 @@ class TranslatorController extends Controller
         $chapter = Chapter::create([
             'title_id'       => $validated['title_id'],
             'chapter_number' => $validated['chapter_number'],
-            'title'          => $validated['chapter_title'] ?? null,
+            //'title'          => $validated['chapter_title'] ?? null,
             'status'         => $status,
             'uploaded_by'    => auth()->id(),
         ]);
@@ -124,7 +130,7 @@ class TranslatorController extends Controller
         $validated = $request->validate([
             'title_id'          => 'required|exists:titles,id',
             'chapter_number'    => 'required|integer|min:1',
-            'chapter_title'     => 'nullable|string|max:255',
+            //'chapter_title'     => 'nullable|string|max:255',
             'upload_method'     => 'required|in:zip,files',
             'zip_file'          => 'required_if:upload_method,zip|file|mimes:zip|max:204800',
             'images'            => 'required_if:upload_method,files|array',
@@ -144,7 +150,7 @@ class TranslatorController extends Controller
         $chapter->update([
             'title_id'       => $validated['title_id'],
             'chapter_number' => $validated['chapter_number'],
-            'title'          => $validated['chapter_title'] ?? null,
+            //'title'          => $validated['chapter_title'] ?? null,
             'status'         => Chapter::STATUS_PENDING,
             'reject_reason'  => null,
         ]);

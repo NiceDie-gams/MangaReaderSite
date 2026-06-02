@@ -28,6 +28,9 @@
                 <a href="{{ route('home') }}" class="hover:text-blue-600">Главная</a>
                 <!-- <button id="install-app-btn" type="button" class="hidden rounded bg-blue-600 px-3 py-1 text-white">Установить</button> -->
                 @auth
+                    @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
+                         <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600">Переводчику</a>
+                    @endif
                     <a href="{{ route('users.show', auth()->user()) }}" class="hover:text-blue-600">Профиль</a>
                     <form method="POST" action="{{ route('auth.logout') }}">
                         @csrf
