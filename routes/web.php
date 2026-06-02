@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\UserController;
@@ -42,4 +43,14 @@ Route::middleware(['auth', 'role:translator,admin'])->prefix('translator')->grou
     Route::get('/chapters', [TranslatorController::class, 'index'])->name('translator.chapters.index');
     Route::get('/chapters/{chapter}/edit', [TranslatorController::class, 'edit'])->name('translator.chapters.edit');
     Route::put('/chapters/{chapter}', [TranslatorController::class, 'update'])->name('translator.chapters.update');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/chapters', [AdminController::class, 'chapters'])->name('admin.chapters.index');
+    Route::patch('/chapters/{chapter}/approve', [AdminController::class, 'approveChapter'])->name('admin.chapters.approve');
+    Route::patch('/chapters/{chapter}/reject', [AdminController::class, 'rejectChapter'])->name('admin.chapters.reject');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports.index');
+    Route::patch('/reports/{report}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
 });

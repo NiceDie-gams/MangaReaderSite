@@ -31,6 +31,9 @@
                     @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
                          <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600">Переводчику</a>
                     @endif
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600">Админка</a>
+                    @endif
                     <a href="{{ route('users.show', auth()->user()) }}" class="hover:text-blue-600">Профиль</a>
                     <form method="POST" action="{{ route('auth.logout') }}">
                         @csrf
