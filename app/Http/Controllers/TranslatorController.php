@@ -56,6 +56,8 @@ class TranslatorController extends Controller
 
         $images = $request->file('images', []);
 
+        \Log::info("Process count images", ['count'=>count($images)]);
+
         $exists = Chapter::where('title_id', $validated['title_id'])
             ->where('chapter_number', $validated['chapter_number'])
             ->exists();
@@ -146,6 +148,8 @@ class TranslatorController extends Controller
         ]);
 
         $images = $request->file('images', []);
+
+        \Log::info("Process count images", ['count'=>count($images)]);
 
 
         $exists = Chapter::where('title_id', $validated['title_id'])
