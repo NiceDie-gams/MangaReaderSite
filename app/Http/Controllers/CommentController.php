@@ -8,29 +8,20 @@ use App\Models\Title;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\CommentRepository;
 
 class CommentController extends Controller
 {
+
+    private $commentRepository;
+
+    public function __construct(CommentRepository $_commentRepository){
+        $this->commentRepository = $_commentRepository;
+    }
+
     public function index(Title $title): JsonResponse
     {
-        $comments = $title->comments()
-            ->with('user:id,name')
-            ->when(auth()->check(), function ($query) {
-                $query->withExists([
-                    'commentLikes as liked_by_user' => fn ($q) => $q->where('user_id', auth()->id()),
-                ]);
-            })
-            ->get()
-            ->map(fn (Comment $comment) => [
-                'id' => $comment->id,
-                'title_id' => $comment->title_id,
-                'content' => $comment->content,
-                'likes' => $comment->likes ?? 0,
-                'created_at' => $comment->created_at,
-                'user' => $comment->user,
-                'liked_by_user' => (bool) ($comment->liked_by_user ?? false),
-            ]);
-
+        $comments = $this->commentRepository->getCommentsForTitle($title);
         return response()->json($comments);
     }
 
@@ -41,11 +32,7 @@ class CommentController extends Controller
             'content' => ['required', 'string', 'max:1500'],
         ]);
 
-        $comment = Comment::create([
-            'user_id' => auth()->id(),
-            'title_id' => $validated['title_id'],
-            'content' => $validated['content'],
-        ])->load('user:id,name');
+        $comment = $this->$commentRepository->createComment($request);
 
         return response()->json([
             'id' => $comment->id,

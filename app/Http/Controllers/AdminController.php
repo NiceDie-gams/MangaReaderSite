@@ -30,7 +30,7 @@ class AdminController extends Controller
     {
         $chapters = Chapter::query()
             ->with(['titleBelong:id,title,slug', 'uploadedBy:id,name,email'])
-            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 0 END")
             ->latest()
             ->paginate(20)
             ->withQueryString();
