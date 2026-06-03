@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reports', [ReportController::class, 'makeReport'])->name('reports.store');
     Route::get('/reports', [ReportController::class, 'showReports'])->name('reports.index');
     Route::patch('/reports/{report}/solve', [ReportController::class, 'solveReport'])->name('reports.solve');
-    Route::post('user/{user}/update', [UserController::class, 'updateUserInfo'])->name('user.update');
+    Route::put('user/{user}/update', [UserController::class, 'updateUserInfo'])->name('user.update');
 });
 
 Route::middleware(['auth', 'role:translator,admin'])->prefix('translator')->group(function () {
