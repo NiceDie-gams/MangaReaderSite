@@ -27,12 +27,7 @@ class CommentController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title_id' => ['required', 'exists:titles,id'],
-            'content' => ['required', 'string', 'max:1500'],
-        ]);
-
-        $comment = $this->$commentRepository->createComment($request);
+        $comment = $this->commentRepository->createComment($request);
 
         return response()->json([
             'id' => $comment->id,

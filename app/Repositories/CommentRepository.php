@@ -3,13 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\Comment;
-use Illuminate\Http\Request;
 use App\Models\Title;
+use Illuminate\Http\Request;
 
-class CommentController {
-
-    public function getCommentsForTitle(Title $title){
-        $comments = $title->comments()
+class CommentRepository
+{
+    public function getCommentsForTitle(Title $title)
+    {
+        return $title->comments()
             ->with('user:id,name')
             ->when(auth()->check(), function ($query) {
                 $query->withExists([
@@ -26,22 +27,19 @@ class CommentController {
                 'user' => $comment->user,
                 'liked_by_user' => (bool) ($comment->liked_by_user ?? false),
             ]);
-        return $comments;
     }
 
-    public function createComment(Request $request){
-
+    public function createComment(Request $request): Comment
+    {
         $validated = $request->validate([
             'title_id' => ['required', 'exists:titles,id'],
             'content' => ['required', 'string', 'max:1500'],
         ]);
 
-        $comment = Comment::create([
+        return Comment::create([
             'user_id' => auth()->id(),
             'title_id' => $validated['title_id'],
             'content' => $validated['content'],
         ])->load('user:id,name');
-
-        return $comments;
     }
 }
