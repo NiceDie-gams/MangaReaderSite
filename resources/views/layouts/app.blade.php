@@ -15,9 +15,23 @@
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="page-loader" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/50">
-        <div class="flex flex-col items-center">
-            <div class="h-14 w-14 animate-spin rounded-full border-4 border-white/30 border-t-white"></div>
-            <p id="page-loader-message" class="mt-3 hidden text-sm font-medium text-white">Загрузка...</p>
+        <div class="loader-container">
+            <svg class="gear" width="48" height="48" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.1 4.4L8.6 2H7.4l-.5 2.4-.7.3-2-1.3-.9.8 1.3 2-.2.7-2.4.5v1.2l2.4.5.3.8-1.3 2 .8.8 2-1.3.8.3.4 2.3h1.2l.5-2.4.8-.3 2 1.3.8-.8-1.3-2 .3-.8 2.3-.4V7.4l-2.4-.5-.3-.8 1.3-2-.8-.8-2 1.3-.7-.2zM9.4 1l.5 2.4L12 2.1l2 2-1.4 2.1 2.4.4v2.8l-2.4.5L14 12l-2 2-2.1-1.4-.5 2.4H6.6l-.5-2.4L4 13.9l-2-2 1.4-2.1L1 9.4V6.6l2.4-.5L2.1 4l2-2 2.1 1.4.4-2.4h2.8zm.6 7c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM8 9c.6 0 1-.4 1-1s-.4-1-1-1-1 .4-1 1 .4 1 1 1z"
+                    fill="currentColor" stroke="currentColor" stroke-width="0.5"/>
+            </svg>
+
+            <svg class="wrench" width="40" height="40" viewBox="0 0 488.535 488.535" xmlns="http://www.w3.org/2000/svg">
+                <path d="M488.21,214.864L463.863,98.924l-84.165-84.156c-0.063-0.055-0.129-0.072-0.191-0.127l-0.352-0.351l-0.064,0.071
+                    c-5.934-5.384-15.075-5.329-20.805,0.407l-49.492,49.478c-5.728,5.736-5.775,14.87-0.4,20.821l-51.727,51.719
+                    c-5.934-5.378-15.078-5.321-20.788,0.414l-49.495,49.469c-5.729,5.736-5.774,14.863-0.414,20.814L17.531,375.949
+                    c-23.374,23.382-23.374,61.284,0,84.667c11.217,11.224,26.437,17.527,42.313,17.527s31.097-6.303,42.313-17.527l168.377-168.369
+                    v0.009l115.948,24.356c5.011,1.052,10.212-0.503,13.833-4.117l5.424-5.433c5.92-5.919,5.904-15.509,0-21.427l-64.3-64.3
+                    l51.503-51.511l64.301,64.3c5.918,5.911,15.508,5.919,21.413,0.008l5.44-5.433C487.716,225.075,489.265,219.873,488.21,214.864z
+                    M80.76,436.115c-10.706,10.714-28.082,10.707-38.786-0.008c-10.674-10.697-10.674-28.056,0-38.763
+                    c10.704-10.706,28.08-10.706,38.786-0.008C91.483,408.051,91.483,425.409,80.76,436.115z"
+                    fill="currentColor"/>
+            </svg>
         </div>
     </div>
 
@@ -92,7 +106,20 @@
         </div>
     @endauth
 
-    <div id="global-loader" class="fixed right-4 bottom-20 z-[10001] hidden rounded bg-slate-900 px-3 py-2 text-sm text-white dark:bg-slate-800">Загрузка...</div>
+    <div id="global-loader" class="fixed right-4 bottom-20 z-[10001] hidden rounded bg-slate-900 px-3 py-2 text-sm text-white dark:bg-slate-800">
+    <div class="loader-animation">
+        <svg class="gear" viewBox="0 0 100 100" width="24" height="24">
+        <path fill="currentColor" d="M50,30a20,20 0 1,0 0,40 20,20 0 0,0 0-40zm0,10a10,10 0 1,1 0,20 10,10 0 0,1 0-20z"/>
+        <path fill="currentColor" d="M50,15 L50,25 M50,75 L50,85 M15,50 L25,50 M75,50 L85,50 M27,27 L34,34 M66,66 L73,73 M27,73 L34,66 M66,34 L73,27"/>
+        <circle cx="50" cy="50" r="6" fill="white"/>
+        </svg>
+        <svg class="wrench" viewBox="0 0 100 100" width="20" height="20">
+        <path fill="currentColor" d="M70,25 L75,30 L55,50 L50,45 Z M45,55 L50,60 L30,80 L25,75 Z M80,20 L75,15 L55,35 L60,40 Z" />
+        <rect x="40" y="58" width="12" height="8" transform="rotate(45 46 62)" fill="currentColor" />
+        <circle cx="70" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="3" />
+        </svg>
+    </div>
+    </div>
     <div id="global-toast" class="fixed left-1/2 top-4 z-[10004] hidden -translate-x-1/2 rounded px-4 py-2 text-sm text-white"></div>
 
     <script>
