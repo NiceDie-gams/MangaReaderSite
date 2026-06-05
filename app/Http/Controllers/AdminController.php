@@ -152,20 +152,29 @@ class AdminController extends Controller
     public function updateTitle(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'id' => ['required', 'exists:titles,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'id'          => ['required', 'exists:titles,id'],
+            'title'       => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
+            'tags'        => ['nullable', 'array'],
+            'tags.*'      => ['exists:tags,id'],
         ]);
 
-        $this->titleRepository->updateTitle($validated);
+        $title = Title::findOrFail($validated['id']);
+        $title->update([
+            'title'       => $validated['title'],
+            'description' => $validated['description'],
+        ]);
+
+        $title->tags()->sync($request->tags ?? []);
 
         return redirect()->back()->with('success', 'Манга успешно обновлена.');
     }
 
     public function titles(): View
     {
-        $titles = $this->titleRepository->getTitles();
+        $titles = Title::with('tags')->latest()->paginate(15);
+        $allTags = Tag::orderBy('name')->get();
 
-        return view('admin.manga', compact('titles'));
+        return view('admin.manga', compact('titles', 'allTags'));
     }
 }
