@@ -47,12 +47,17 @@ Route::middleware(['auth', 'role:translator,admin'])->prefix('translator')->grou
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/titles', [AdminController::class, 'storeTitle'])->name('admin.titles.store');
     Route::get('/chapters', [AdminController::class, 'chapters'])->name('admin.chapters.index');
     Route::patch('/chapters/{chapter}/approve', [AdminController::class, 'approveChapter'])->name('admin.chapters.approve');
     Route::patch('/chapters/{chapter}/reject', [AdminController::class, 'rejectChapter'])->name('admin.chapters.reject');
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports.index');
     Route::patch('/reports/{report}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
+    
+    Route::get('/titles-list', [AdminController::class, 'titles'])->name('admin.titles.index');
+    Route::delete('/titles-list/{title}', [AdminController::class, 'deleteTitle'])->name('admin.titles.delete');
+    Route::patch('/titles-list/update', [AdminController::class, 'updateTitle'])->name('admin.titles.update');
 
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::post('/statistics/update', [AdminController::class, 'updateStatistics'])->name('statistics.update');
