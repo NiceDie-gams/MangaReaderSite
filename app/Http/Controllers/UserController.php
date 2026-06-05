@@ -21,7 +21,7 @@ class UserController extends Controller
         abort_unless(auth()->id() === $user->id, 403);
 
         $user->update([
-            'name' => $request->validate(['name' => 'required|string|max:255'])['name'],
+            'name' => $request->validate(['name' => 'required|string|max:255|unique:users,name'])['name'],
         ]);
 
         return redirect()->route('users.show', $user);

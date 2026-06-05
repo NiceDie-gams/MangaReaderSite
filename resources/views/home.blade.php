@@ -62,10 +62,18 @@
         <div class="titles-grid grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             @foreach($titles as $title)
                 <a href="{{ route('titles.show', $title) }}"
-                   class="group overflow-hidden rounded bg-white shadow transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                   style="animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: {{ $loop->index * 0.1 }}s;">
+                class="group overflow-hidden rounded bg-white shadow transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                style="animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: {{ $loop->index * 0.1 }}s;">
                     <img src="{{ $title->cover_image }}" class="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105" alt="{{ $title->title }}">
-                    <div class="p-2 text-sm font-medium">{{ $title->title }}</div>
+
+                    <div class="p-2 text-sm font-medium flex items-center justify-between">
+                        <span>{{ $title->title }}</span>
+                        @if(auth()->check() && in_array($title->id, $favoriteIds))
+                            <svg class="w-4 h-4 text-yellow-500 inline-block" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                        @endif
+                    </div>
                 </a>
             @endforeach
         </div>

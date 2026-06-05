@@ -41,6 +41,11 @@ class TitleController extends Controller
 
         $titles = $query->latest()->paginate(12)->withQueryString();
 
+        $favoriteIds = [];
+        if (auth()->check()) {
+            $favoriteIds = auth()->user()->favoriteTitles->pluck('id')->toArray();
+        }
+
         if ($request->wantsJson()) {
             return response()->json($titles);
         }
@@ -50,6 +55,7 @@ class TitleController extends Controller
             'tags'         => Tag::orderBy('name')->get(),
             'selectedTags' => $tagsInput,
             'search'       => $search,
+            'favoriteIds'  => $favoriteIds,
         ]);
     }
 

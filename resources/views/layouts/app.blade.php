@@ -73,7 +73,7 @@
         <button
             id="report-open-btn"
             type="button"
-            class="fixed bottom-4 left-1/2 z-[10002] -translate-x-1/2 rounded-full bg-slate-800 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600"
+            class="fixed bottom-4 left-1 ml-20 z-[10002] -translate-x-1/2 rounded-full bg-slate-800 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600"
         >
             Жалоба
         </button>
