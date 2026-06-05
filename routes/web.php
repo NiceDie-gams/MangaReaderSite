@@ -11,10 +11,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TranslatorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\AboutPageController;
 
 Route::get('/', [TitleController::class, 'index'])->name('home');
 Route::get('/title/{title:slug}', [TitleController::class, 'show'])->name('titles.show');
 Route::get('/title/{title:slug}/chapter/{chapter}', [ChapterController::class, 'show'])->name('chapters.show');
+
+Route::get('/about', [AboutPageController::class, 'about'])->name('about');
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth', [AuthController::class, 'showLogin'])->name('auth.login');
