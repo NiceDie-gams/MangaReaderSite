@@ -10,10 +10,14 @@ use App\Http\Controllers\TitleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TranslatorController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\AboutPageController;
 
 Route::get('/', [TitleController::class, 'index'])->name('home');
 Route::get('/title/{title:slug}', [TitleController::class, 'show'])->name('titles.show');
 Route::get('/title/{title:slug}/chapter/{chapter}', [ChapterController::class, 'show'])->name('chapters.show');
+
+Route::get('/about', [AboutPageController::class, 'about'])->name('about');
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth', [AuthController::class, 'showLogin'])->name('auth.login');
@@ -54,7 +58,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports.index');
     Route::patch('/reports/{report}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
-    
+
     Route::get('/titles-list', [AdminController::class, 'titles'])->name('admin.titles.index');
     Route::delete('/titles-list/{title}', [AdminController::class, 'deleteTitle'])->name('admin.titles.delete');
     Route::patch('/titles-list/update', [AdminController::class, 'updateTitle'])->name('admin.titles.update');
@@ -62,3 +66,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::post('/statistics/update', [AdminController::class, 'updateStatistics'])->name('statistics.update');
 });
+
+
+// Route::get('/test-mail', function () {
+//     Mail::raw('Тестовое сообщение из Laravel через Яндекс.SMTP', function ($message) {
+//         $message->to('ostriynskiy@gmail.com')
+//                 ->subject('Тест отправки');
+//     });
+
+//     return 'Письмо отправлено!';
+// });

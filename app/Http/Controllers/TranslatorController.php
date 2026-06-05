@@ -7,6 +7,7 @@ use App\Models\Title;
 use App\Services\ChapterFileService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Events\NewChapterUploaded;
 
 class TranslatorController extends Controller
 {
@@ -96,6 +97,9 @@ class TranslatorController extends Controller
         $message = $autoApprove
             ? 'Глава успешно добавлена и сразу опубликована.'
             : 'Глава отправлена на модерацию.';
+
+
+        event(new NewChapterUploaded($chapter));
 
         return redirect()->route('translator.chapters.index')->with('success', $message);
     }

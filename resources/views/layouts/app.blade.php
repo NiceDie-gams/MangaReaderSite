@@ -55,6 +55,7 @@
 
             <nav class="hidden items-center gap-3 text-sm lg:flex">
                 <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
+                <a href="{{ route('about') }}" class="hover:text-blue-600 dark:hover:text-blue-400">О нас</a>
                 @auth
                     @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
                         <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Переводчику</a>
