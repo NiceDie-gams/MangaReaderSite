@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Events\NewReportSubmitted;
 
 class ReportController extends Controller
 {
@@ -23,6 +24,8 @@ class ReportController extends Controller
             'reportText' => $validated['reportText'],
             'isSolved' => false,
         ]);
+
+        event(new NewReportSubmitted($report));
 
         return response()->json([
             'message' => 'Жалоба успешно отправлена.',
