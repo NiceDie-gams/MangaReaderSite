@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Services\BannedWordChecker;
 
 class UserController extends Controller
 {
@@ -20,9 +21,15 @@ class UserController extends Controller
     {
         abort_unless(auth()->id() === $user->id, 403);
 
-        $user->update([
-            'name' => $request->validate(['name' => 'required|string|max:255|unique:users,name'])['name'],
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:users,name,' . $user->id,
         ]);
+
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['name'])) {
+            return back()->withErrors(['name' => "Имя содержит запрещённое слово: {$bannedWord}"]);
+        }
+
+        $user->update(['name' => $validated['name']]);
 
         return redirect()->route('users.show', $user);
     }

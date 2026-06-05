@@ -12,7 +12,7 @@
             <label class="mb-1 block font-medium">Тайтл <span class="text-red-600">*</span></label>
             <input type="text" id="title-search" class="w-full rounded border px-3 py-2" placeholder="Начните вводить название..." autocomplete="off">
             <input type="hidden" name="title_id" id="title-id" required>
-            <div id="title-suggestions" class="absolute z-10 mt-1 hidden max-h-60 w-full overflow-auto rounded border bg-white shadow-lg"></div>
+            <div id="title-suggestions" class="absolute z-10 mt-1 hidden max-h-60 w-relative overflow-auto rounded border bg-white shadow-lg"></div>
             @error('title_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
