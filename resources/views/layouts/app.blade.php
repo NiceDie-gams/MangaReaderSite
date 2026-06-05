@@ -39,16 +39,47 @@
 
     <header class="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+
             <a href="{{ route('home') }}" class="logo-link flex items-center gap-0 text-xl font-bold transition-all duration-500 ease-out">
                 <span class="text-slate-800 dark:text-white">Manga</span>
                 <span class="ml-0.5 rounded-md bg-transparent px-1.5 py-0.5 text-slate-800 transition-all duration-300 dark:bg-[#ff9000] dark:text-black">Reader</span>
             </a>
-            <nav class="flex items-center gap-3 text-sm">
-                <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
 
+
+            <button id="burger-btn" class="block rounded p-1 text-slate-800 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700 lg:hidden" aria-label="Меню">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+
+            <nav class="hidden items-center gap-3 text-sm lg:flex">
+                <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
                 @auth
                     @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
-                         <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Переводчику</a>
+                        <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Переводчику</a>
+                    @endif
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Админка</a>
+                    @endif
+                    <a href="{{ route('users.show', auth()->user()) }}" class="hover:text-blue-600 dark:hover:text-blue-400">Профиль</a>
+                    <form method="POST" action="{{ route('auth.logout') }}">
+                        @csrf
+                        <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Выход</button>
+                    </form>
+                @else
+                    <a href="{{ route('auth.login') }}" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Вход</a>
+                @endauth
+            </nav>
+        </div>
+
+
+        <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-800 lg:hidden">
+            <nav class="flex flex-col gap-3 text-sm">
+                <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
+                @auth
+                    @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
+                        <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Переводчику</a>
                     @endif
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Админка</a>
@@ -167,6 +198,22 @@
         window.addEventListener('load', function () {
             document.getElementById('page-loader')?.classList.add('hidden');
         });
+        const burgerBtn = document.getElementById('burger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (burgerBtn && mobileMenu) {
+            burgerBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                const svg = burgerBtn.querySelector('svg');
+                if (svg) {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                    } else {
+                        svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
