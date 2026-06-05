@@ -32,12 +32,16 @@ class TitleRepository {
 
     public function updateTitle($validatedData)
     {
-        $title = Title::find($validatedData['id']);
-        if($title->update(['title' => $validatedData['title'], 'description' => $validatedData['description']])){
-            return true;
-        } else {
-            return false;
-        }
+        $title = Title::findOrFail($validatedData['id']);
+
+        $title->update([
+            'title'       => $validatedData['title'],
+            'description' => $validatedData['description'],
+        ]);
+
+        $title->tags()->sync($validatedData['tags'] ?? []);
+
+        return;
     }
 
     public function updateCover($validatedData, $cover)

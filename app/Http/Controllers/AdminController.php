@@ -159,13 +159,7 @@ class AdminController extends Controller
             'tags.*'      => ['exists:tags,id'],
         ]);
 
-        $title = Title::findOrFail($validated['id']);
-        $title->update([
-            'title'       => $validated['title'],
-            'description' => $validated['description'],
-        ]);
-
-        $title->tags()->sync($request->tags ?? []);
+        $this->titleRepository->updateTitle($validated);
 
         return redirect()->back()->with('success', 'Манга успешно обновлена.');
     }
