@@ -98,6 +98,20 @@
             <h3 class="text-lg font-semibold relative z-10">Статистика</h3>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 relative z-10">Статистика сайта.</p>
         </a>
+        <a href="{{ route('admin.titles.index') }}"
+           class="action-card group relative overflow-hidden rounded bg-white p-5 shadow transition-all duration-300 hover:scale-105 hover:shadow-lg dark:bg-gray-800">
+            <svg class="action-icon icon1 absolute w-12 h-12 opacity-10 dark:opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4 6h16v2H4V6zm2-4h12v2H6V2zm16 8H2v12h20V10zm-2 10H4v-8h16v8z"/>
+            </svg>
+            <svg class="action-icon icon2 absolute w-16 h-16 opacity-10 dark:opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2z"/>
+            </svg>
+            <svg class="action-icon icon3 absolute w-10 h-10 opacity-10 dark:opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63c-.75.51-1.37 1.18-1.82 1.96H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-4 4c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4z"/>
+            </svg>
+            <h3 class="text-lg font-semibold relative z-10">Манга</h3>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 relative z-10">Добавление, редактирование и удаление манги.</p>
+        </a>
     </div>
 </div>
 

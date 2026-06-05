@@ -47,6 +47,83 @@
     </aside>
 
     <section>
+        @auth
+            @if(auth()->user()->isAdmin())
+                <div class="mb-4 flex items-center justify-between">
+                    <button
+                        id="add-title-open-btn"
+                        type="button"
+                        class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                    >
+                        Добавить мангу
+                    </button>
+                </div>
+
+                <div id="add-title-modal" class="fixed inset-0 z-[10003] hidden items-center justify-center bg-slate-900/50 p-4">
+                    <div class="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl dark:bg-slate-800">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h2 class="text-lg font-semibold">Добавить мангу</h2>
+                            <button id="add-title-close-btn" type="button" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200" aria-label="Закрыть">✕</button>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.titles.store') }}" enctype="multipart/form-data" class="space-y-3">
+                            @csrf
+
+                            <div>
+                                <label for="title-name" class="mb-1 block text-sm text-slate-600 dark:text-slate-300">Название</label>
+                                <input
+                                    id="title-name"
+                                    type="text"
+                                    name="title"
+                                    value="{{ old('title') }}"
+                                    required
+                                    maxlength="255"
+                                    class="w-full rounded border px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
+                                >
+                                @error('title') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label for="title-description" class="mb-1 block text-sm text-slate-600 dark:text-slate-300">Описание</label>
+                                <textarea
+                                    id="title-description"
+                                    name="description"
+                                    rows="4"
+                                    maxlength="5000"
+                                    class="w-full rounded border px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
+                                >{{ old('description') }}</textarea>
+                                @error('description') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label for="title-cover" class="mb-1 block text-sm text-slate-600 dark:text-slate-300">Обложка</label>
+                                <input
+                                    id="title-cover"
+                                    type="file"
+                                    name="cover_image"
+                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                    required
+                                    class="w-full rounded border px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
+                                >
+                                @error('cover_image') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="flex justify-end gap-2">
+                                <button type="button" id="add-title-cancel-btn" class="rounded border px-4 py-2 text-sm">Отмена</button>
+                                <button type="submit" class="rounded bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700">Сохранить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endif
+        @endauth
+
+        @if(session('success'))
+            <div class="mb-4 rounded border border-emerald-300 bg-emerald-50 px-4 py-2 text-emerald-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <style>
             @keyframes fadeInUp {
                 from {
@@ -80,4 +157,41 @@
         <div class="mt-4">{{ $titles->links() }}</div>
     </section>
 </div>
+
+@auth
+    @if(auth()->user()->isAdmin())
+        <script>
+            (function () {
+                const modal = document.getElementById('add-title-modal');
+                const openBtn = document.getElementById('add-title-open-btn');
+                const closeBtn = document.getElementById('add-title-close-btn');
+                const cancelBtn = document.getElementById('add-title-cancel-btn');
+
+                if (!modal || !openBtn) return;
+
+                const openModal = () => {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                };
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                };
+
+                openBtn.addEventListener('click', openModal);
+                closeBtn?.addEventListener('click', closeModal);
+                cancelBtn?.addEventListener('click', closeModal);
+
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) closeModal();
+                });
+
+                @if($errors->has('title') || $errors->has('description') || $errors->has('cover_image'))
+                    openModal();
+                @endif
+            })();
+        </script>
+    @endif
+@endauth
 @endsection

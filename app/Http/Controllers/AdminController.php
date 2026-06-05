@@ -4,15 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Chapter;
 use App\Models\Report;
+use App\Models\Title;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Artisan;
+use App\Repositories\TitleRepository;
 
 class AdminController extends Controller
 {
+    private $titleRepository;
+
+    public function __construct(TitleRepository $titleRepository)
+    {
+        $this->titleRepository = $titleRepository;
+    }
+
     public function dashboard(): View
     {
         $stats = [
@@ -114,5 +123,49 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', 'Статистика обновлена');
+    }
+
+    public function storeTitle(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'cover_image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+        ]);
+
+        $cover = $request->file('cover_image');
+
+        $title = $this->titleRepository->storeTitle($validated, $cover);
+
+        return redirect()
+            ->route('titles.show', $title)
+            ->with('success', 'Манга успешно добавлена.');
+    }
+
+    public function deleteTitle(Title $title): RedirectResponse
+    {
+        $this->titleRepository->deleteTitle($title);
+
+        return redirect()->back()->with('success', 'Манга успешно удалена.');
+    }
+
+    public function updateTitle(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'id' => ['required', 'exists:titles,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $this->titleRepository->updateTitle($validated);
+
+        return redirect()->back()->with('success', 'Манга успешно обновлена.');
+    }
+
+    public function titles(): View
+    {
+        $titles = $this->titleRepository->getTitles();
+
+        return view('admin.manga', compact('titles'));
     }
 }
