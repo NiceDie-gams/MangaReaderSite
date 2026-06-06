@@ -39,7 +39,7 @@ class TitleController extends Controller
             $query->whereDoesntHave('tags', fn ($q) => $q->whereIn('tags.id', $excludeIds));
         }
 
-        $titles = $query->latest()->paginate(12)->withQueryString();
+        $titles = $query->latest()->paginate(8)->withQueryString();
 
         $favoriteIds = [];
         if (auth()->check()) {

@@ -229,15 +229,24 @@ document.getElementById('comment-form')?.addEventListener('submit', async (e) =>
     const content = document.getElementById('comment-content')?.value ?? '';
     if (!content.trim()) return;
     try {
-        await fetch('/comments', {
+        const response = await fetch('/comments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
             body: JSON.stringify({ title_id: titleId, content }),
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showToast(data.message || 'Ошибка при отправке комментария', 'error');
+            return;
+        }
+
         document.getElementById('comment-content').value = '';
         await loadComments();
-    } catch {
-        showToast('Ошибка отправки комментария');
+        showToast('Комментарий добавлен', 'success');
+    } catch (error) {
+        showToast('Не удалось отправить комментарий', 'error');
     }
 });
 

@@ -6,6 +6,7 @@ use App\Models\Report;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Events\NewReportSubmitted;
+use App\Services\BannedWordChecker;
 
 class ReportController extends Controller
 {
@@ -18,6 +19,12 @@ class ReportController extends Controller
             'reportText.min' => 'Текст жалобы должен содержать не менее 10 символов.',
             'reportText.max' => 'Текст жалобы не должен превышать 2000 символов.',
         ]);
+
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['reportText'])) {
+            return response()->json([
+                'message' => "Текст жалобы содержит запрещённое слово: {$bannedWord}"
+            ], 422);
+        }
 
         $report = Report::create([
             'user_id' => auth()->id(),

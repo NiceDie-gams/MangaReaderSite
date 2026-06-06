@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\CommentRepository;
+use App\Services\BannedWordChecker;
 
 class CommentController extends Controller
 {
@@ -27,6 +28,17 @@ class CommentController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+
+        $validated = $request->validate([
+            'title_id' => ['required', 'exists:titles,id'],
+            'content' => ['required', 'string', 'max:1500'],
+        ]);
+
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['content'])) {
+            return response()->json([
+                'message' => "Комментарий содержит запрещённое слово: {$bannedWord}"
+            ], 422);
+        }
         $comment = $this->commentRepository->createComment($request);
 
         return response()->json([

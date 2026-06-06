@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use App\Services\BannedWordChecker;
 
 class AuthController extends Controller
 {
@@ -45,6 +46,12 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['name'])) {
+            return back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['name' => "Имя содержит запрещённое слово: {$bannedWord}"]);
+        }
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -52,7 +59,6 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-
         return redirect('/');
     }
 

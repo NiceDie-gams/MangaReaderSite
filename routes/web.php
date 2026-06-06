@@ -12,6 +12,7 @@ use App\Http\Controllers\TranslatorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\AboutPageController;
+use App\Http\Controllers\BannedWordController;
 
 Route::get('/', [TitleController::class, 'index'])->name('home');
 Route::get('/title/{title:slug}', [TitleController::class, 'show'])->name('titles.show');
@@ -66,6 +67,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::post('/statistics/update', [AdminController::class, 'updateStatistics'])->name('statistics.update');
     Route::put('about/update', [AboutPageController::class, 'updateAbout'])->name('admin.about.update');
+
+
+    Route::get('/banned-words', [BannedWordController::class, 'index'])->name('admin.banned-words.index');
+    Route::post('/banned-words', [BannedWordController::class, 'store'])->name('admin.banned-words.store');
+    Route::delete('/banned-words/{bannedWord}', [BannedWordController::class, 'destroy'])->name('admin.banned-words.destroy');
+
 });
 
 
