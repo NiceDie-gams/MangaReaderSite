@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::post('/statistics/update', [AdminController::class, 'updateStatistics'])->name('statistics.update');
+    Route::put('about/update', [AboutPageController::class, 'updateAbout'])->name('admin.about.update');
 });
 
 

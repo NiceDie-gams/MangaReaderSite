@@ -12,6 +12,7 @@
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>{{ config('app.name', 'MangaReader') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-head.tinymce-config />
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="page-loader" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/50">
