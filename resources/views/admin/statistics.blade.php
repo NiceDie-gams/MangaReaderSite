@@ -2,8 +2,10 @@
 
 @section('content')
 <div class="rounded bg-white p-6 shadow">
-    <div class="mb-4 flex items-center justify-between">
+    < class="mb-4 flex items-center justify-between">
         <h1 class="text-2xl font-bold">Статистика тегов по избранному</h1>
+        <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:underline">Назад в админ-панель</a>
+
         <form action="{{ route('statistics.update') }}" method="POST" id="update-form">
             @csrf
             <button type="submit" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">

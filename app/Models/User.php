@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'password', 'role'])]  // добавлен 'role'
+#[Fillable(['name', 'email', 'password', 'role', 'is_banned'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -33,6 +33,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_banned' => 'boolean',
         ];
     }
 
@@ -71,4 +72,30 @@ class User extends Authenticatable
         return $this->hasMany(Chapter::class, 'uploaded_by');
     }
 
+    public function isBanned(): bool
+    {
+        return $this->is_banned;
+    }
+
+    public function ban(): void
+    {
+        $this->update(['is_banned' => true]);
+    }
+
+    public function unban(): void
+    {
+        $this->update(['is_banned' => false]);
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function assignRole(string $role): void
+    {
+        if (in_array($role, [self::ROLE_USER, self::ROLE_TRANSLATOR, self::ROLE_ADMIN])) {
+            $this->update(['role' => $role]);
+        }
+    }
 }

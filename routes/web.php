@@ -73,6 +73,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/banned-words', [BannedWordController::class, 'store'])->name('admin.banned-words.store');
     Route::delete('/banned-words/{bannedWord}', [BannedWordController::class, 'destroy'])->name('admin.banned-words.destroy');
 
+    Route::patch('/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.role');
+    Route::patch('/users/{user}/ban', [AdminController::class, 'toggleUserBan'])->name('admin.users.ban');
+
 });
 
 

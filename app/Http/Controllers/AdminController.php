@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Artisan;
 use App\Repositories\TitleRepository;
+use App\Services\BannedWordChecker;
 
 class AdminController extends Controller
 {
@@ -133,8 +134,15 @@ class AdminController extends Controller
             'cover_image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
         ]);
 
-        $cover = $request->file('cover_image');
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['title'])) {
+            return back()->withErrors(['title' => "Название содержит запрещённое слово: {$bannedWord}"])->withInput();
+        }
 
+        if (!empty($validated['description']) && $bannedWord = BannedWordChecker::getBannedWordInText($validated['description'])) {
+            return back()->withErrors(['description' => "Описание содержит запрещённое слово: {$bannedWord}"])->withInput();
+        }
+
+        $cover = $request->file('cover_image');
         $title = $this->titleRepository->storeTitle($validated, $cover);
 
         return redirect()
@@ -159,6 +167,14 @@ class AdminController extends Controller
             'tags.*'      => ['exists:tags,id'],
         ]);
 
+        if ($bannedWord = BannedWordChecker::getBannedWordInText($validated['title'])) {
+        return back()->withErrors(['title' => "Название содержит запрещённое слово: {$bannedWord}"])->withInput();
+        }
+
+        if (!empty($validated['description']) && $bannedWord = BannedWordChecker::getBannedWordInText($validated['description'])) {
+            return back()->withErrors(['description' => "Описание содержит запрещённое слово: {$bannedWord}"])->withInput();
+        }
+
         $this->titleRepository->updateTitle($validated);
 
         return redirect()->back()->with('success', 'Манга успешно обновлена.');
@@ -170,5 +186,35 @@ class AdminController extends Controller
         $allTags = Tag::orderBy('name')->get();
 
         return view('admin.manga', compact('titles', 'allTags'));
+    }
+
+    public function updateUserRole(Request $request, User $user): RedirectResponse
+    {
+        $request->validate([
+            'role' => ['required', 'in:user,translator,admin'],
+        ]);
+
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['role' => 'Вы не можете изменить свою собственную роль.']);
+        }
+
+        $user->assignRole($request->role);
+        return back()->with('success', "Роль пользователя {$user->name} изменена на {$request->role}.");
+    }
+
+    public function toggleUserBan(User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['ban' => 'Вы не можете забанить самого себя.']);
+        }
+
+        if ($user->isBanned()) {
+            $user->unban();
+            $message = "Пользователь {$user->name} разблокирован.";
+        } else {
+            $user->ban();
+            $message = "Пользователь {$user->name} заблокирован.";
+        }
+        return back()->with('success', $message);
     }
 }
