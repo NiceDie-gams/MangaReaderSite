@@ -10,6 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="MangaReader">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <script src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js"></script>
     <title>{{ config('app.name', 'MangaReader') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <x-head.tinymce-config />
@@ -42,8 +43,8 @@
         <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
 
             <a href="{{ route('home') }}" class="logo-link flex items-center gap-0 text-xl font-bold transition-all duration-500 ease-out">
-                <span class="text-slate-800 dark:text-white">Manga</span>
-                <span class="ml-0.5 rounded-md bg-transparent px-1.5 py-0.5 text-slate-800 transition-all duration-300 dark:bg-[#ff9000] dark:text-black">Reader</span>
+                <span class="text-slate-800 dark:text-white do-not-translate">Manga</span>
+                <span class="ml-0.5 rounded-md bg-transparent px-1.5 py-0.5 text-slate-800 transition-all duration-300 dark:bg-[#ff9000] dark:text-black do-not-translate">Reader</span>
             </a>
 
 
@@ -55,6 +56,13 @@
 
 
             <nav class="hidden items-center gap-3 text-sm lg:flex">
+                <script>
+                    translate.selectLanguageTag.languages = 'english,russian,spanish';
+                    translate.ignore.class.push('do-not-translate');
+                    translate.language.setLocal('russian');  // Укажите язык вашей страницы
+                    translate.service.use('client.edge');    // Выберите бесплатный сервис перевода
+                    translate.execute();                     // Запустите перевод
+                </script>
                 <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
                 <a href="{{ route('about') }}" class="hover:text-blue-600 dark:hover:text-blue-400">О нас</a>
                 @auth
@@ -218,4 +226,5 @@
         }
     </script>
 </body>
+
 </html>
