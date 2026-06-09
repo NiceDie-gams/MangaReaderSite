@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\AboutPageController;
 use App\Http\Controllers\BannedWordController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', [TitleController::class, 'index'])->name('home');
 Route::get('/title/{title:slug}', [TitleController::class, 'show'])->name('titles.show');
@@ -75,6 +76,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::patch('/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.role');
     Route::patch('/users/{user}/ban', [AdminController::class, 'toggleUserBan'])->name('admin.users.ban');
+
+    Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('admin.settings.update');
 
 });
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use App\Services\BannedWordChecker;
+use App\Services\SettingsService;
 
 class AuthController extends Controller
 {
@@ -33,13 +34,19 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    public function showRegister(): View
+    public function showRegister(SettingsService $settings): View|RedirectResponse
     {
+        if (!$settings->isRegistrationEnabled()) {
+            return redirect()->route('home')->withErrors(['registration' => 'Регистрация временно закрыта администратором.']);
+        }
         return view('auth.register');
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(Request $request, SettingsService $settings): RedirectResponse
     {
+        if (!$settings->isRegistrationEnabled()) {
+            return redirect()->route('home')->withErrors(['registration' => 'Регистрация временно закрыта.']);
+        }
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:users,name'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],

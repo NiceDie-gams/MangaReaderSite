@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="rounded bg-white p-6 shadow">
-    < class="mb-4 flex items-center justify-between">
+
         <h1 class="text-2xl font-bold">Статистика тегов по избранному</h1>
         <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:underline">Назад в админ-панель</a>
 

@@ -234,3 +234,18 @@
         transform: translate(12px, 12px) rotate(12deg);
     }
 }
+
+@layer base {
+  h1 {
+    @apply pl-10 text-2xl font-bold dark:text-white;
+  }
+  p {
+    @apply text-left text-gray-700 dark:text-gray-300;
+  }
+  ul {
+    @apply list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300;
+  }
+  li {
+    @apply text-left;
+  }
+}

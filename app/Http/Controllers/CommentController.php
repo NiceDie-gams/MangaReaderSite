@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\CommentRepository;
 use App\Services\BannedWordChecker;
+use App\Services\SettingsService;
 
 class CommentController extends Controller
 {
@@ -26,8 +27,11 @@ class CommentController extends Controller
         return response()->json($comments);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, SettingsService $settings): JsonResponse
     {
+        if (!$settings->isCommentsEnabled()) {
+                return response()->json(['message' => 'Комментарии временно отключены администратором.'], 403);
+            }
 
         $validated = $request->validate([
             'title_id' => ['required', 'exists:titles,id'],

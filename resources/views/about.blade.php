@@ -5,10 +5,12 @@
     <h1 class="mb-6 text-3xl font-bold dark:text-white">О нас</h1>
 
     {{-- Отображение текущего текста --}}
-    <div class="mb-8">
-        <h2 class="mb-3 text-xl font-semibold text-blue-600 dark:text-blue-400">О компании</h2>
-        <div class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300">
-            {!! $aboutText !!}   {{-- чтобы выводить HTML, сохранённый из TinyMCE --}}
+    <div id="app">
+        <div class="mb-8">
+
+            <div class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300">
+                {!! $aboutText !!}   {{-- чтобы выводить HTML, сохранённый из TinyMCE --}}
+            </div>
         </div>
     </div>
 

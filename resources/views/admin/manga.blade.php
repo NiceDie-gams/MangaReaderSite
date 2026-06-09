@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="space-y-4">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 class="text-2xl font-bold">Манга</h1>
-        <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:underline dark:text-blue-400">Назад в админ-панель</a>
+        <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:underline dark:text-blue-400">← Назад в админ-панель</a>
     </div>
 
     @if(session('success'))
@@ -19,7 +19,8 @@
         </div>
     @endif
 
-    <div class="overflow-x-auto rounded bg-white shadow dark:bg-gray-800">
+    {{-- Десктопная таблица (видна на md и выше) --}}
+    <div class="hidden overflow-x-auto rounded bg-white shadow dark:bg-gray-800 md:block">
         <table class="min-w-full text-sm">
             <thead class="bg-slate-100 text-left dark:bg-gray-700">
                 <tr>
@@ -66,7 +67,45 @@
         </table>
     </div>
 
-    {{ $titles->links() }}
+    {{-- Мобильные карточки (видны только на экранах меньше md) --}}
+    <div class="space-y-4 md:hidden">
+        @forelse($titles as $title)
+            <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                <div class="mb-2 flex items-start justify-between">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium dark:bg-gray-700 dark:text-white">#{{ $title->id }}</span>
+                    </div>
+                </div>
+                <h3 class="text-md font-semibold dark:text-white">{{ $title->title }}</h3>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{{ Str::limit($title->description, 80) }}</p>
+                <div class="mt-2 flex flex-wrap gap-1">
+                    @foreach($title->tags as $tag)
+                        <span class="inline-block rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-600 dark:text-white">{{ $tag->name }}</span>
+                    @endforeach
+                </div>
+                <div class="mt-4 flex flex-col gap-2">
+                    <button data-title-id="{{ $title->id }}" class="open-edit-modal w-full rounded bg-yellow-400 py-2 text-white hover:bg-yellow-500 dark:bg-yellow-600 dark:hover:bg-yellow-700">
+                        Обновить
+                    </button>
+                    <form method="POST" action="{{ route('admin.titles.delete', $title) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full rounded bg-rose-600 py-2 text-white hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-800">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-lg bg-white p-6 text-center text-slate-500 shadow dark:bg-gray-800 dark:text-gray-400">
+                Манга не найдена.
+            </div>
+        @endforelse
+    </div>
+
+    <div class="mt-4">
+        {{ $titles->links() }}
+    </div>
 </div>
 
 {{-- Модальное окно для редактирования (общее) --}}
@@ -135,7 +174,6 @@
     color: #0f172a;
 }
 </style>
-
 
 <script>
     (function() {
@@ -218,5 +256,4 @@
         @endif
     })();
 </script>
-
 @endsection

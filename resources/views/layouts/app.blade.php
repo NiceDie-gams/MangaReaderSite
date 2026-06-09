@@ -14,6 +14,15 @@
     <title>{{ config('app.name', 'MangaReader') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <x-head.tinymce-config />
+
+    <style>
+
+        @media (max-width: 768px) {
+            #report-open-btn {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="page-loader" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/50">
@@ -47,7 +56,6 @@
                 <span class="ml-0.5 rounded-md bg-transparent px-1.5 py-0.5 text-slate-800 transition-all duration-300 dark:bg-[#ff9000] dark:text-black do-not-translate">Reader</span>
             </a>
 
-
             <button id="burger-btn" class="block rounded p-1 text-slate-800 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700 lg:hidden" aria-label="Меню">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -59,9 +67,9 @@
                 <script>
                     translate.selectLanguageTag.languages = 'english,russian,spanish';
                     translate.ignore.class.push('do-not-translate');
-                    translate.language.setLocal('russian');  // Укажите язык вашей страницы
-                    translate.service.use('client.edge');    // Выберите бесплатный сервис перевода
-                    translate.execute();                     // Запустите перевод
+                    translate.language.setLocal('russian');
+                    translate.service.use('client.edge');
+                    translate.execute();
                 </script>
                 <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
                 <a href="{{ route('about') }}" class="hover:text-blue-600 dark:hover:text-blue-400">О нас</a>
@@ -83,10 +91,10 @@
             </nav>
         </div>
 
-
         <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-800 lg:hidden">
             <nav class="flex flex-col gap-3 text-sm">
                 <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Главная</a>
+                <a href="{{ route('about') }}" class="hover:text-blue-600 dark:hover:text-blue-400">О нас</a>
                 @auth
                     @if(auth()->user()->isTranslator() || auth()->user()->isAdmin())
                         <a href="{{ route('translator.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Переводчику</a>
@@ -95,6 +103,8 @@
                         <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Админка</a>
                     @endif
                     <a href="{{ route('users.show', auth()->user()) }}" class="hover:text-blue-600 dark:hover:text-blue-400">Профиль</a>
+
+                    <button id="mobile-report-open-btn" class="text-left hover:text-blue-600 dark:hover:text-blue-400">Жалоба</button>
                     <form method="POST" action="{{ route('auth.logout') }}">
                         @csrf
                         <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Выход</button>
@@ -150,18 +160,18 @@
     @endauth
 
     <div id="global-loader" class="fixed right-4 bottom-20 z-[10001] hidden rounded bg-slate-900 px-3 py-2 text-sm text-white dark:bg-slate-800">
-    <div class="loader-animation">
-        <svg class="gear" viewBox="0 0 100 100" width="24" height="24">
-        <path fill="currentColor" d="M50,30a20,20 0 1,0 0,40 20,20 0 0,0 0-40zm0,10a10,10 0 1,1 0,20 10,10 0 0,1 0-20z"/>
-        <path fill="currentColor" d="M50,15 L50,25 M50,75 L50,85 M15,50 L25,50 M75,50 L85,50 M27,27 L34,34 M66,66 L73,73 M27,73 L34,66 M66,34 L73,27"/>
-        <circle cx="50" cy="50" r="6" fill="white"/>
-        </svg>
-        <svg class="wrench" viewBox="0 0 100 100" width="20" height="20">
-        <path fill="currentColor" d="M70,25 L75,30 L55,50 L50,45 Z M45,55 L50,60 L30,80 L25,75 Z M80,20 L75,15 L55,35 L60,40 Z" />
-        <rect x="40" y="58" width="12" height="8" transform="rotate(45 46 62)" fill="currentColor" />
-        <circle cx="70" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="3" />
-        </svg>
-    </div>
+        <div class="loader-animation">
+            <svg class="gear" viewBox="0 0 100 100" width="24" height="24">
+                <path fill="currentColor" d="M50,30a20,20 0 1,0 0,40 20,20 0 0,0 0-40zm0,10a10,10 0 1,1 0,20 10,10 0 0,1 0-20z"/>
+                <path fill="currentColor" d="M50,15 L50,25 M50,75 L50,85 M15,50 L25,50 M75,50 L85,50 M27,27 L34,34 M66,66 L73,73 M27,73 L34,66 M66,34 L73,27"/>
+                <circle cx="50" cy="50" r="6" fill="white"/>
+            </svg>
+            <svg class="wrench" viewBox="0 0 100 100" width="20" height="20">
+                <path fill="currentColor" d="M70,25 L75,30 L55,50 L50,45 Z M45,55 L50,60 L30,80 L25,75 Z M80,20 L75,15 L55,35 L60,40 Z" />
+                <rect x="40" y="58" width="12" height="8" transform="rotate(45 46 62)" fill="currentColor" />
+                <circle cx="70" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="3" />
+            </svg>
+        </div>
     </div>
     <div id="global-toast" class="fixed left-1/2 top-4 z-[10004] hidden -translate-x-1/2 rounded px-4 py-2 text-sm text-white"></div>
 
@@ -208,9 +218,9 @@
         window.addEventListener('load', function () {
             document.getElementById('page-loader')?.classList.add('hidden');
         });
+
         const burgerBtn = document.getElementById('burger-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-
         if (burgerBtn && mobileMenu) {
             burgerBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
@@ -224,7 +234,19 @@
                 }
             });
         }
+
+        const mobileReportBtn = document.getElementById('mobile-report-open-btn');
+        if (mobileReportBtn) {
+            mobileReportBtn.addEventListener('click', () => {
+                const modal = document.getElementById('report-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            });
+        }
+
+
     </script>
 </body>
-
 </html>

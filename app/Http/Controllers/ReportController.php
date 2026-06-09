@@ -7,11 +7,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Events\NewReportSubmitted;
 use App\Services\BannedWordChecker;
+use App\Services\SettingsService;
 
 class ReportController extends Controller
 {
-    public function makeReport(Request $request): JsonResponse
+    public function makeReport(Request $request, SettingsService $settings): JsonResponse
     {
+        if (!$settings->isReportsEnabled()) {
+            return response()->json(['message' => 'Отправка жалоб временно отключена.'], 403);
+        }
         $validated = $request->validate([
             'reportText' => ['required', 'string', 'min:10', 'max:2000'],
         ], [
