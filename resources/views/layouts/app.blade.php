@@ -86,7 +86,7 @@
                         <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Выход</button>
                     </form>
                 @else
-                    <a href="{{ route('auth.login') }}" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Вход</a>
+                    <a href="{{ route('login') }}" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Вход</a>
                 @endauth
             </nav>
         </div>
@@ -110,7 +110,7 @@
                         <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Выход</button>
                     </form>
                 @else
-                    <a href="{{ route('auth.login') }}" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Вход</a>
+                    <a href="{{ route('login') }}" class="rounded bg-slate-800 px-3 py-1 text-white dark:bg-slate-700 dark:hover:bg-slate-600">Вход</a>
                 @endauth
             </nav>
         </div>

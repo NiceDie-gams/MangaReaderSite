@@ -22,7 +22,7 @@ Route::get('/title/{title:slug}/chapter/{chapter}', [ChapterController::class, '
 Route::get('/about', [AboutPageController::class, 'about'])->name('about');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/auth', [AuthController::class, 'showLogin'])->name('auth.login');
+    Route::get('/auth', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login.submit');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('auth.register');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register.submit');
